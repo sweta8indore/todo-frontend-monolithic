@@ -1,8 +1,65 @@
-trigger: none 
-pool: Default
+trigger: none
 
-steps: 
-- task: PowerShell@2
-  inputs:
-    targetType: 'inline'
-    script: 'Write-Host "Hello World"'
+pool: practice-pool
+
+jobs:
+  - job: scanningtool
+    displayName: scanning tool
+    steps:    
+      - task: PowerShell@2
+        displayName: biome
+        continueOnError: true
+        inputs:
+          targetType: 'inline'
+          script: |
+            npm install --save-dev --save-exact @biomejs/biome
+            # format files
+            npx @biomejs/biome format --write
+            
+            # lint files and apply the safe fixes
+            npx @biomejs/biome lint --write
+            
+            # run format, lint, etc. and apply the safe fixes
+            npx @biomejs/biome check --write
+            
+            # check all files against format, lint, etc. in CI environments
+            npx @biomejs/biome ci
+
+
+      - task: PowerShell@2
+        displayName: npminstall
+        continueOnError: true
+        inputs:
+          targetType: 'inline'
+          script: |
+            npm install
+            npm run build
+
+  # - job: npminstall
+  #   displayName: npm job
+  #   pool: practice-pool
+  #   dependsOn: scanningtool
+    # steps:
+# ZIP CREATE
+      - task: ArchiveFiles@2
+        inputs:
+          rootFolderOrFile: '$(System.DefaultWorkingDirectory)/build/'
+          includeRootFolder: false
+          archiveType: 'zip'
+          archiveFile: '$(System.DefaultWorkingDirectory)/build.zip'
+          replaceExistingArchive: true
+      - task: AzureCLI@2
+        inputs:
+          azureSubscription: 'pipeline-sc'
+          scriptType: 'ps'
+          scriptLocation: 'inlineScript'
+          inlineScript: 'az storage blob upload --account-name reactartifact55 --account-key srFGQU710xjwWGFQ0sm+DVleOM5r9XBl5QnfKWI0P9xDmIDFynkWwv8T0b0p/HKVqOdhhHqyNNfX+AStEim3gw== --container-name artifact --file $(System.DefaultWorkingDirectory)/build.zip --name artifact'
+
+
+
+
+
+
+
+
+
