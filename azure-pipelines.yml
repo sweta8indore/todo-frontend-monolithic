@@ -48,12 +48,7 @@ jobs:
           archiveType: 'zip'
           archiveFile: '$(System.DefaultWorkingDirectory)/build.zip'
           replaceExistingArchive: true
-      - task: AzureCLI@2
-        inputs:
-          azureSubscription: 'pipeline-sc'
-          scriptType: 'ps'
-          scriptLocation: 'inlineScript'
-          inlineScript: 'az storage blob upload --account-name reactartifact55 --account-key srFGQU710xjwWGFQ0sm+DVleOM5r9XBl5QnfKWI0P9xDmIDFynkWwv8T0b0p/HKVqOdhhHqyNNfX+AStEim3gw== --container-name artifact --file $(System.DefaultWorkingDirectory)/build.zip --name artifact'
+      
 
 
 
