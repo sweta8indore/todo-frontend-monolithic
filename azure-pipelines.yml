@@ -1,13 +1,47 @@
 trigger: none
-
-pool: practice-pool
-
 stages:
-- stage: ci
+- stage: cdpipe
+  displayName: CD via SSH
   jobs:
-    - job: installandbuild
-      displayName: npm install and build
-      steps:    
+  - deployment: deployreact
+    displayName: Deploy React to VM
+    environment: production
+    pool:
+      vmImage: 'ubuntu-latest'
+    strategy:
+      runOnce:
+        deploy:
+          steps:
+
+          # 1️⃣ Download pipeline artifact
+          - download: current
+            artifact: build
+
+          # 2️⃣ Copy files to VM
+          - task: CopyFilesOverSSH@0
+            displayName: Copy React build to VM
+            inputs:
+              sshEndpoint: 'vm-ssh-connection'
+              sourceFolder: '$(Pipeline.Workspace)/build'
+              contents: '**'
+              targetFolder: '/var/www/build'
+              cleanTargetFolder: true
+
+          # 3️⃣ Permission + restart nginx
+          - task: SSH@0
+            displayName: Restart Nginx
+            inputs:
+              sshEndpoint: 'vm-ssh-connection'
+              runOptions: 'inline'
+              inline: |
+                sudo chown -R www-data:www-data /var/www/build
+                sudo chmod -R 755 /var/www/build
+                sudo systemctl restart nginx
+# - stage: ci
+#   jobs:
+#     - job: installandbuild
+#       displayName: npm install and build
+      #steps:    
         # - task: PowerShell@2
         #   displayName: biome
         #   continueOnError: true
@@ -26,65 +60,63 @@ stages:
               
         #       # check all files against format, lint, etc. in CI environments
         #       npx @biomejs/biome ci
-        - task: PowerShell@2
-          displayName: npminstall
-          continueOnError: true
-          inputs:
-            targetType: 'inline'
-            script: |
-              npm install
-              npm run build
+    #     - task: PowerShell@2
+    #       displayName: npminstall
+    #       continueOnError: true
+    #       inputs:
+    #         targetType: 'inline'
+    #         script: |
+    #           npm install
+    #           npm run build
 
-    - job: copyfiles
-      displayName: copy files
-      pool: practice-pool
-      dependsOn: installandbuild
-      steps:
-      - task: CopyFiles@2
-        displayName: 'copy build to staging directory'
-        inputs:
-          SourceFolder: 'build'
-          Contents: '**'
-          TargetFolder: '$(build.ArtifactStagingDirectory)'
+    # - job: copyfiles
+    #   displayName: copy files
+    #   pool: practice-pool
+    #   dependsOn: installandbuild
+    #   steps:
+    #   - task: CopyFiles@2
+    #     displayName: 'copy build to staging directory'
+    #     inputs:
+    #       SourceFolder: 'build'
+    #       Contents: '**'
+    #       TargetFolder: '$(build.ArtifactStagingDirectory)'
     
-      - task: PublishPipelineArtifact@1
-        displayName: 'publish react artifact'
-        inputs:
-          targetPath: '$(build.ArtifactStagingDirectory)'
-          artifact: 'build'
-          publishLocation: 'pipeline'
+    #   - task: PublishPipelineArtifact@1
+    #     displayName: 'publish react artifact'
+    #     inputs:
+    #       targetPath: '$(build.ArtifactStagingDirectory)'
+    #       artifact: 'build'
+    #       publishLocation: 'pipeline'
 
-- stage: cdpipe
-  jobs:
-    - deployment: deployreact
-      environment: 'production'
-      strategy:
-       runOnce:
-         deploy:
-           steps:
-            - task: DownloadBuildArtifacts@1
-              inputs:
-                buildType: 'current'
-                downloadType: 'single'
-                artifactName: 'build'
-                downloadPath: '$(System.ArtifactsDirectory)'
+  # - stage: cdpipe
+  #   jobs:cd
+  #     job:cdjob
+  #     - deployment: deployreact
+  #       environment: 'production'
+  #       strategy:
+  #       runOnce:
+  #         deploy:
+  #           steps:
+  #           - task: DownloadBuildArtifacts@1
+  #             inputs:
+  #               buildType: 'current'
+  #               downloadType: 'single'
+  #               artifactName: 'build'
+  #               downloadPath: '$(System.ArtifactsDirectory)'
 
-            - task: CopyFilesOverSSH@0
-              inputs:
-                sshEndpoint: 'vm-ssh-connection'
-                sourceFolder: '$(Pipeline.Workspace)/build'
-                contents: '**'
-                targetFolder: '/var/www/build'
-                cleanTargetFolder: true
+  #           - task: CopyFilesOverSSH@0
+  #             inputs:
+  #               sshEndpoint: 'vm-ssh-connection'
+  #               sourceFolder: '$(Pipeline.Workspace)/build'
+  #               contents: '**'
+  #               targetFolder: '/var/www/build'
+  #               cleanTargetFolder: true
                 
 
-            - task: SSH@0
-              inputs:
-                sshEndpoint: 'vm-ssh-connection'
-                runOptions: 'inline'
-                inline: |
-                  sudo chown -R www-data:www-data /var/www/build
-                  sudo systemctl restart nginx
-      
-        
-       
+  #           - task: SSH@0
+  #             inputs:
+  #               sshEndpoint: 'vm-ssh-connection'
+  #               runOptions: 'inline'
+  #               inline: |
+  #                 sudo chown -R www-data:www-data /var/www/build
+  #                 sudo systemctl restart nginx
