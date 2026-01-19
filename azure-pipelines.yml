@@ -68,6 +68,23 @@ stages:
                 downloadType: 'single'
                 artifactName: 'build'
                 downloadPath: '$(System.ArtifactsDirectory)'
+
+            - task: CopyFilesOverSSH@0
+              inputs:
+                sshEndpoint: 'vm-ssh-connection'
+                sourceFolder: '$(Pipeline.Workspace)/build'
+                contents: '**'
+                targetFolder: '/var/www/build'
+                cleanTargetFolder: true
+                
+
+            - task: SSH@0
+              inputs:
+                sshEndpoint: 'vm-ssh-connection'
+                runOptions: 'inline'
+                inline: |
+                  sudo chown -R www-data:www-data /var/www/build
+                  sudo systemctl restart nginx
       
         
        
