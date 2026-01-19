@@ -3,7 +3,7 @@ trigger: none
 pool: practice-pool
 
 stages:
-- stage: build
+- stage: ci
   jobs:
     - job: installandbuild
       displayName: npm install and build
@@ -53,3 +53,21 @@ stages:
           targetPath: '$(build.ArtifactStagingDirectory)'
           artifact: 'build'
           publishLocation: 'pipeline'
+
+- stage: cdpipe
+  jobs:
+    - deployment: deployreact
+      environment: 'production'
+      strategy:
+       runOnce:
+         deploy:
+           steps:
+            - task: DownloadBuildArtifacts@1
+              inputs:
+                buildType: 'current'
+                downloadType: 'single'
+                artifactName: 'build'
+                downloadPath: '$(System.ArtifactsDirectory)'
+      
+        
+       
