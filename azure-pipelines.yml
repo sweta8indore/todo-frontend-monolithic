@@ -84,6 +84,8 @@ stages:
               sshEndpoint: 'react-sc'
               runOptions: 'inline'
               inline: |
+                sudo apt update
+                sudo apt install nginx -y
                 sudo rm -rf /var/www/build/*
                 sudo cp -r /home/azureuser/build/* /var/www/build/
                 sudo chown -R www-data:www-data /var/www/build
