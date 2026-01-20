@@ -73,7 +73,7 @@ stages:
               sshEndpoint: 'react-sc'
               sourceFolder: '$(Pipeline.Workspace)/build'
               contents: '**'
-              targetFolder: '/var/www/build'
+              targetFolder: '/home/username/react-build'
               cleanTargetFolder: true
               readyTimeout: '20000'
 
@@ -84,7 +84,8 @@ stages:
               sshEndpoint: 'react-sc'
               runOptions: 'inline'
               inline: |
+                sudo rm -rf /var/www/build/*
+                sudo cp -r /home/username/react-build/* /var/www/build/
                 sudo chown -R www-data:www-data /var/www/build
-                sudo chmod -R 755 /var/www/build
                 sudo systemctl restart nginx
               readyTimeout: '20000'
