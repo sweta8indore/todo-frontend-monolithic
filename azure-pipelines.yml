@@ -56,8 +56,6 @@ stages:
   - deployment: deployreact
     displayName: Deploy React to VM
     environment: production
-    pool:
-      vmImage: 'ubuntu-latest'
     strategy:
       runOnce:
         deploy:
