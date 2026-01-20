@@ -24,13 +24,34 @@ stages:
         #       npx @biomejs/biome check --write
               
         #       # check all files against format, lint, etc. in CI environments
-        #       npx @biomejs/biome ci
+        # #       npx @biomejs/biome ci
+        # - task: PowerShell@2
+        #   displayName: npminstall
+        #   continueOnError: true
+        #   inputs:
+        #     targetType: 'inline'
+        #     script: 'npm run build'    
+        # 1️⃣ Use correct Node version
+        - task: NodeTool@0
+          displayName: Use Node.js
+          inputs:
+            versionSpec: '18.x'
+
+        # 2️⃣ Install dependencies
         - task: PowerShell@2
-          displayName: npminstall
-          continueOnError: true
+          displayName: npm install
           inputs:
             targetType: 'inline'
-            script: 'npm run build'
+            script: |
+              npm install
+
+        # 3️⃣ Build React app
+        - task: PowerShell@2
+          displayName: npm run build
+          inputs:
+            targetType: 'inline'
+            script: |
+              npm run build
 
     - job: copyfiles
       displayName: copy files
