@@ -73,7 +73,7 @@ stages:
           publishLocation: 'pipeline'
 
 - stage: cdpipe
-  displayName: CD via SSH
+  displayName: CD via environment
   jobs:
   - deployment: deployreact
     displayName: Deploy React to VM
