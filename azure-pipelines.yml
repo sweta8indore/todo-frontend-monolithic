@@ -84,10 +84,27 @@ stages:
               sshEndpoint: 'react-sc'
               runOptions: 'inline'
               inline: |
-                sudo apt update
-                sudo apt install nginx -y
-                sudo rm -rf /var/www/html/*
-                sudo cp -r /home/azureuser/build/* /var/www/html/
-                sudo chown -R www-data:www-data /var/www/html
-                sudo systemctl restart nginx
+                set -e
+                      echo "Checking nginx installation..."
+                
+                      if ! command -v nginx >/dev/null 2>&1; then
+                        echo "Nginx not found. Installing..."
+                        sudo apt-get update -y
+                        sudo DEBIAN_FRONTEND=noninteractive sudo apt-get install -y nginx
+                      else
+                        echo "Nginx already installed. Skipping install."
+                      fi
+                
+                      echo "Deploying React build..."
+                
+                      sudo mkdir -p /var/www/html
+                      sudo rm -rf /var/www/html/*
+                      sudo cp -r /home/azureuser/build/* /var/www/html/
+                
+                      sudo chown -R www-data:www-data /var/www/html
+                      sudo chmod -R 755 /var/www/html
+                
+                      echo "Restarting nginx..."
+                      sudo systemctl restart nginx
+                      sudo systemctl status nginx --no-pager
               readyTimeout: '20000'
