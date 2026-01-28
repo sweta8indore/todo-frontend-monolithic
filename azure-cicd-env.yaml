@@ -1,4 +1,4 @@
-trigger: none
+trigger: master
 pool: practice-pool
 stages:
 
@@ -80,6 +80,7 @@ stages:
     environment:
       name: production
       resourceType: VirtualMachine
+      resourceName: frontend-vm
     strategy:
       runOnce:
         deploy:
