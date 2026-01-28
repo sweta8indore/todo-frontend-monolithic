@@ -1,4 +1,7 @@
-trigger: master
+trigger: 
+  branches:
+   include:
+     - master
 pool: practice-pool
 stages:
 
