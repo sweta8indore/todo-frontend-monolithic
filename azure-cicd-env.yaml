@@ -83,7 +83,7 @@ stages:
     environment:
       name: production
       resourceType: VirtualMachine
-      resourceName: frontend-vm
+      resourceName: front-vm
     strategy:
       runOnce:
         deploy:

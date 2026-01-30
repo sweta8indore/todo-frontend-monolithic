@@ -4,7 +4,7 @@ import { Button, TextField, Container, Typography, Grid, Card, CardContent, Icon
 import { Delete } from '@mui/icons-material';
 import { Box } from '@mui/material';
 
-const API_BASE_URL = 'http://20.197.46.33:8000/api'
+const API_BASE_URL = 'http://4.240.101.70:8000/api'
 
 const backgroundImage = process.env.PUBLIC_URL + '/background.jpg';
 
