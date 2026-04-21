@@ -58,32 +58,21 @@ stages:
           displayName: Publish build artifact
           inputs:
             targetPath: '$(Build.SourcesDirectory)\build'
-            artifact: 'react-build'
+            artifact: 'build'
 
-    - job: copyfiles
-      displayName: copy files
-      pool: cicdpool
-      dependsOn: installandbuild
-      steps:    
-      - task: PublishPipelineArtifact@1
-        displayName: 'publish react artifact'
-        inputs:
-          targetPath: '$(build.ArtifactStagingDirectory)'
-          artifact: 'build'
-          publishLocation: 'pipeline'
+    # - job: copyfiles
+    #   displayName: copy files
+    #   pool: cicdpool
+    #   dependsOn: installandbuild
+    #   steps:    
+    #   - task: PublishPipelineArtifact@1
+    #     displayName: 'publish react artifact'
+    #     inputs:
+    #       targetPath: '$(build.ArtifactStagingDirectory)'
+    #       artifact: 'build'
+    #       publishLocation: 'pipeline'
 
 
-# - job: copyfiles
-#   displayName: copy files
-#   pool: cicdpool
-#   dependsOn: installandbuild
-
-#   steps:
-#   - task: DownloadPipelineArtifact@2
-#     displayName: Download build artifact
-#     inputs:
-#       artifact: 'react-build'
-#       path: '$(Pipeline.Workspace)\build'
 
 - stage: cdpipe
   displayName: CD via SSH
