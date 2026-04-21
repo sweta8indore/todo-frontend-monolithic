@@ -55,7 +55,7 @@ stages:
 
     - job: copyfiles
       displayName: copy files
-      pool: practice-pool
+      pool: cicdpool
       dependsOn: installandbuild
       steps:
       - task: CopyFiles@2
@@ -91,7 +91,7 @@ stages:
           - task: CopyFilesOverSSH@0
             displayName: Copy React build to VM
             inputs:
-              sshEndpoint: 'react-sc'
+              sshEndpoint: 'ssh-sc'
               sourceFolder: '$(Pipeline.Workspace)/build'
               contents: '**'
               targetFolder: '/home/azureuser/build'
