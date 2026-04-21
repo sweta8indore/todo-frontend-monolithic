@@ -1,5 +1,5 @@
 trigger: none
-pool: practice-pool
+pool: cicdpool
 stages:
 
 - stage: ci
@@ -102,7 +102,7 @@ stages:
           - task: SSH@0
             displayName: Restart Nginx
             inputs:
-              sshEndpoint: 'react-sc'
+              sshEndpoint: 'ssh-sc'
               runOptions: 'inline'
               inline: |
                 set -e
@@ -129,3 +129,4 @@ stages:
                       sudo systemctl restart nginx
                       sudo systemctl status nginx --no-pager
                       readyTimeout: '20000'
+              readyTimeout: '20000'
