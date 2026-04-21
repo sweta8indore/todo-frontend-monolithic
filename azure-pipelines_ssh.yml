@@ -53,24 +53,37 @@ stages:
             script: |
               npm run build
 
+            # 🔥 ADD THIS (IMPORTANT)
+        - task: PublishPipelineArtifact@1
+          displayName: Publish build artifact
+          inputs:
+            targetPath: '$(Build.SourcesDirectory)\build'
+            artifact: 'react-build'
+
     - job: copyfiles
       displayName: copy files
       pool: cicdpool
       dependsOn: installandbuild
-      steps:
-      - task: CopyFiles@2
-        displayName: 'copy build to staging directory'
-        inputs:
-          SourceFolder: 'build'
-          Contents: '**'
-          TargetFolder: '$(build.ArtifactStagingDirectory)'
-    
+      steps:    
       - task: PublishPipelineArtifact@1
         displayName: 'publish react artifact'
         inputs:
           targetPath: '$(build.ArtifactStagingDirectory)'
           artifact: 'build'
           publishLocation: 'pipeline'
+
+
+# - job: copyfiles
+#   displayName: copy files
+#   pool: cicdpool
+#   dependsOn: installandbuild
+
+#   steps:
+#   - task: DownloadPipelineArtifact@2
+#     displayName: Download build artifact
+#     inputs:
+#       artifact: 'react-build'
+#       path: '$(Pipeline.Workspace)\build'
 
 - stage: cdpipe
   displayName: CD via SSH
