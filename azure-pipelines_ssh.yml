@@ -107,7 +107,8 @@ stages:
               sshEndpoint: 'ssh-sc'
               sourceFolder: '$(Pipeline.Workspace)/build'
               contents: '**'
-              targetFolder: '/home/azureuser/build'
+              # targetFolder: '/home/azureuser/build'
+              targetFolder: '/tmp/build'
               cleanTargetFolder: true
               readyTimeout: '20000'
 
@@ -133,7 +134,7 @@ stages:
                 
                       sudo mkdir -p /var/www/html
                       sudo rm -rf /var/www/html/*
-                      sudo cp -r /home/azureuser/build/* /var/www/html/
+                      sudo cp -r /tmp/build/* /var/www/html/
                 
                       sudo chown -R www-data:www-data /var/www/html
                       sudo chmod -R 755 /var/www/html
